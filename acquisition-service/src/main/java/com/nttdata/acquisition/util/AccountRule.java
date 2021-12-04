@@ -30,7 +30,7 @@ public class AccountRule {
                                                                        customerType.equals("PERSONAL") ? 1 : 0;
         this.minimumHeadlines = customerType.equals("PERSONAL") ? 1 : 1;
         this.maximumHeadlines = customerType.equals("PERSONAL") ? 1 : Integer.MAX_VALUE;
-        this.minimumAuthorizedSigners = customerType.equals("PERSONAL") ? 1 : 0;
-        this.maximumAuthorizedSigners = customerType.equals("PERSONAL") ? 1 : Integer.MAX_VALUE;
+        this.minimumAuthorizedSigners = customerType.equals("PERSONAL") ? 0 : 0;
+        this.maximumAuthorizedSigners = customerType.equals("PERSONAL") ? 0 : Integer.MAX_VALUE;
     }
 }

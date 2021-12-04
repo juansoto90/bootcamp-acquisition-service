@@ -1,9 +1,11 @@
 package com.nttdata.acquisition.service.impl;
 
 import com.nttdata.acquisition.model.entity.Acquisition;
+import com.nttdata.acquisition.model.entity.Customer;
 import com.nttdata.acquisition.repository.IAcquisitionRepository;
 import com.nttdata.acquisition.service.IAcquisitionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,7 +14,23 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AcquisitionServiceImpl implements IAcquisitionService {
 
+    @Autowired
     private final IAcquisitionRepository iAcquisitionRepository;
+
+    @Override
+    public Flux<Acquisition> findAcquisitionByCustomer_Id(String id) {
+        return iAcquisitionRepository.findAcquisitionByCustomer_Id(id);
+    }
+
+    @Override
+    public Flux<Acquisition> findByCustomerDocumentNumber(String documentNumber) {
+        return iAcquisitionRepository.findByCustomerDocumentNumber(documentNumber);
+    }
+
+    @Override
+    public Flux<Acquisition> findByIdCustomer(Customer customer) {
+        return iAcquisitionRepository.findByCustomer(customer);
+    }
 
     @Override
     public Mono<Acquisition> create(Acquisition acquisition) {
@@ -25,12 +43,8 @@ public class AcquisitionServiceImpl implements IAcquisitionService {
     }
 
     @Override
-    public Mono<Void> deleteById(String id) {
-        return iAcquisitionRepository.deleteById(id);
+    public Mono<Void> delete(Acquisition acquisition) {
+        return iAcquisitionRepository.delete(acquisition);
     }
 
-    @Override
-    public Flux<Acquisition> findByIdCustomer(String idCustomer) {
-        return iAcquisitionRepository.findByIdCustomer(idCustomer);
-    }
 }

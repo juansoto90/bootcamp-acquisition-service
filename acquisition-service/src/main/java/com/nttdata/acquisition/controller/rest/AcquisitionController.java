@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
-@RequestMapping("/acquisition")
+@RequestMapping("/acquisitionv2")
 @RequiredArgsConstructor
 public class AcquisitionController {
 
@@ -27,20 +27,18 @@ public class AcquisitionController {
 
     @GetMapping("/{id}")
     public Mono<Long> findbyIdCustomer(@PathVariable String id){
-        return iAcquisitionService.findByIdCustomer(id)
+        return iAcquisitionService.findAcquisitionByCustomer_Id(id)
                 .filter(f -> f.getStatus().equals("CREATED"))
                 .count();
     }
 
     @PostMapping
     public Mono<Acquisition> create(@RequestBody Acquisition acquisition){
-        //return iAcquisitionService.create(acquisition);
         AccountRule accountRule = new AccountRule();
         Validator validator = new Validator();
 
-        //Mono<Acquisition> acquisitionMono =
         return
-        iCustomerService.findById(acquisition.getIdCustomer())
+        iCustomerService.findById(acquisition.getCustomer().getId())
         .flatMap(p -> {
             acquisition.setCustomer(p);
             return Mono.just(acquisition);
@@ -59,17 +57,9 @@ public class AcquisitionController {
             accountRule.setMaximumAuthorizedSigners(acc.getMaximumAuthorizedSigners());
         })
         .flatMap(acq -> {
-            return  iAcquisitionService.findByIdCustomer(acq.getIdCustomer())
+            return  iAcquisitionService.findAcquisitionByCustomer_Id(acq.getCustomer().getId())
                     .filter(f -> f.getStatus().equals("CREATED"))
                     .count();
-                    /*.map(c -> {
-                        validator.setAmount(c.intValue());
-                        return Mono.just(0);
-                    });*/
-                    /*.doOnNext(c -> {
-                        validator.setAmount(Math.toIntExact(c));
-                    });*/
-                    //.subscribe(p -> System.out.println(p));
         })
         .flatMap(c -> {
             if (accountRule.getMaximumAccount() > Math.toIntExact(c)){
@@ -85,8 +75,8 @@ public class AcquisitionController {
         return iAcquisitionService.update(acquisition);
     }
 
-    @DeleteMapping
+    /*@DeleteMapping
     public Mono<Void> deleteById(String id){
         return iAcquisitionService.deleteById(id);
-    }
+    }*/
 }

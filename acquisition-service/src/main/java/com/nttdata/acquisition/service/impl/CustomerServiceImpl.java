@@ -11,11 +11,11 @@ import reactor.core.publisher.Mono;
 @Service
 public class CustomerServiceImpl implements ICustomerService {
 
+    @Autowired
     private final WebClient.Builder webClientBuilder;
-    private static final String WEB_CLIENT_URL = "customer.web.url";
+    private static final String WEB_CLIENT_URL = "microservice.web.customer";
     private final String URI;
 
-    @Autowired
     public CustomerServiceImpl(WebClient.Builder webClientBuilder, Environment env) {
         this.webClientBuilder = webClientBuilder;
         URI = env.getProperty(WEB_CLIENT_URL);

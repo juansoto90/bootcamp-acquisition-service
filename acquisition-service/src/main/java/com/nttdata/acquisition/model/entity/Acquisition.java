@@ -19,11 +19,8 @@ import java.util.List;
 public class Acquisition {
     @Id
     private String id;
-    private String idCustomer;
-    private Customer Customer;
+    private Customer customer;
     private String productType;
-    private List<Customer> customerOwner;
-    private List<Customer> customerAuthorizedSigner;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime acquisitionDate = LocalDateTime.now();
     private String status;
