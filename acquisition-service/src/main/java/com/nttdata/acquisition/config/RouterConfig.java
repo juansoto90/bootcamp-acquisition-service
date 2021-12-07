@@ -14,6 +14,7 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> routes(AcquisitionHandler handler){
         return route(POST("/acquisition/account"), handler::createAccount)
-                .andRoute(POST("/acquisition/creditcard"), handler::createCreditCard);
+                .andRoute(POST("/acquisition/creditcard"), handler::createCreditCard)
+                .andRoute(POST("/acquisition/credit"), handler::createCredit);
     }
 }

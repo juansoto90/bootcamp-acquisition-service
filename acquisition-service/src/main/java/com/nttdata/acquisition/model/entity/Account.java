@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class Account {
     private String id;
-    private Double balance;
+    private double balance;
     private String accountNumber;
     private boolean maintenanceCommission;
     private boolean maximumMovementLimit;

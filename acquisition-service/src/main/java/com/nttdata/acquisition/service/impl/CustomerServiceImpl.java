@@ -11,9 +11,8 @@ import reactor.core.publisher.Mono;
 @Service
 public class CustomerServiceImpl implements ICustomerService {
 
-    @Autowired
     private final WebClient.Builder webClientBuilder;
-    private static final String WEB_CLIENT_URL = "microservice.web.customer";
+    private final String WEB_CLIENT_URL = "microservice.web.customer";
     private final String URI;
 
     public CustomerServiceImpl(WebClient.Builder webClientBuilder, Environment env) {

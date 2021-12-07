@@ -41,4 +41,11 @@ public class messageException {
     public static String creditCardAmountMessage(){
         return "You already have a credit card";
     }
+
+    public static String creditAmountMessage(String customerType){
+        if (customerType.equals("PERSONAL"))
+            return "You already have an approved credit";
+        else
+            return "";
+    }
 }

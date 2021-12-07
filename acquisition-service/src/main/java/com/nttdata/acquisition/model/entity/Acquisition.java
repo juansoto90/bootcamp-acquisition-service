@@ -21,6 +21,7 @@ public class Acquisition {
     private String id;
     private String productType;
     private String customerType;
+    private String customerDocumentNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime acquisitionDate = LocalDateTime.now();
     private String status;

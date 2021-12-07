@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class AccountDto {
-    private Double balance;
+    private double balance;
     private String productType;
     private String customerType;
     private String documentNumber;

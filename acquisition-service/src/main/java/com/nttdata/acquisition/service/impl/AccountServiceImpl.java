@@ -16,9 +16,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Service
 public class AccountServiceImpl implements IAccountService {
 
-    @Autowired
     private final WebClient.Builder webClientBuilder;
-    private static final String WEB_CLIENT_URL = "microservice.web.account";
+    private final String WEB_CLIENT_URL = "microservice.web.account";
     private final String BASE;
 
     public AccountServiceImpl(WebClient.Builder webClientBuilder, Environment env) {
@@ -28,8 +27,6 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public Mono<Account> save(Account account) {
-        /*return webClientBuilder.build().post().uri(URI)
-                .retrieve().bodyToMono(Account.class);*/
         return webClientBuilder
                 .baseUrl(BASE)
                 .build()

@@ -4,22 +4,18 @@ import com.nttdata.acquisition.exception.AcquisitionException;
 import com.nttdata.acquisition.exception.messageException;
 import com.nttdata.acquisition.model.dto.AccountDto;
 import com.nttdata.acquisition.model.dto.CreditCardDto;
+import com.nttdata.acquisition.model.dto.CreditDto;
 import com.nttdata.acquisition.model.entity.Account;
 import com.nttdata.acquisition.model.entity.Acquisition;
+import com.nttdata.acquisition.model.entity.Credit;
 import com.nttdata.acquisition.model.entity.CreditCard;
-import com.nttdata.acquisition.model.entity.Customer;
-import com.nttdata.acquisition.service.IAccountService;
-import com.nttdata.acquisition.service.IAcquisitionService;
-import com.nttdata.acquisition.service.ICreditCardService;
-import com.nttdata.acquisition.service.ICustomerService;
+import com.nttdata.acquisition.service.*;
 import com.nttdata.acquisition.util.AccountRule;
 import com.nttdata.acquisition.util.CreditCardRule;
 import com.nttdata.acquisition.util.CreditRule;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -32,13 +28,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AcquisitionHandler {
 
-    @Autowired
     private final IAcquisitionService service;
-    @Autowired
     private final ICustomerService iCustomerService;
-    @Autowired
     private final IAccountService iAccountService;
     private final ICreditCardService iCreditCardService;
+    private final ICreditService iCreditService;
 
     public Mono<ServerResponse> createAccount(ServerRequest request) {
         Mono<AccountDto> dto = request.bodyToMono(AccountDto.class);
@@ -49,13 +43,14 @@ public class AcquisitionHandler {
                 .flatMap(d -> iCustomerService.findByDocumentNumber(d.getDocumentNumber())
                                                     .map(c -> {
                                                         account.setCustomer(c);
+                                                        account.setBalance(d.getBalance());
                                                         return d;
                                                     })
                 )
                 .flatMap(d -> d.getCustomerOwner() == null ?
                                                 Mono.just(d) :
                                                 Flux.fromIterable(d.getCustomerOwner())
-                                                                  .flatMap(c ->  iCustomerService.findByDocumentNumber(c))
+                                                                  .flatMap(iCustomerService::findByDocumentNumber)
                                                                   .collectList()
                                                                   .map(list -> {
                                                                         account.setCustomerOwner(list);
@@ -65,18 +60,17 @@ public class AcquisitionHandler {
                 .flatMap(d -> d.getCustomerAuthorizedSigner() == null ?
                                                 Mono.just(d) :
                                                 Flux.fromIterable(d.getCustomerAuthorizedSigner())
-                                                                   .flatMap(c ->  iCustomerService.findByDocumentNumber(c))
+                                                                   .flatMap(iCustomerService::findByDocumentNumber)
                                                                    .collectList()
                                                                    .map(list -> {
                                                                         account.setCustomerAuthorizedSigner(list);
                                                                         return d;
                                                                    })
                 )
-                .map(a -> {
-                    account.setBalance(a.getBalance());
-
-                    acquisition.setProductType(a.getProductType());
-                    acquisition.setCustomerType(a.getCustomerType());
+                .map(d -> {
+                    acquisition.setProductType(d.getProductType());
+                    acquisition.setCustomerType(d.getCustomerType());
+                    acquisition.setCustomerDocumentNumber(d.getDocumentNumber());
                     acquisition.setStatus("CREATED");
                     return acquisition;
                 })
@@ -153,6 +147,7 @@ public class AcquisitionHandler {
                 .map(d -> {
                     acquisition.setProductType(d.getProductType());
                     acquisition.setCustomerType(d.getCustomerType());
+                    acquisition.setCustomerDocumentNumber(d.getDocumentNumber());
                     acquisition.setStatus("CREATED");
                     return acquisition;
                 })
@@ -175,6 +170,54 @@ public class AcquisitionHandler {
                                             creditCard.setStatus("CREATED");
                                             creditCard.setAcquisition(a);
                                             return iCreditCardService.save(creditCard);
+                                        });
+                            });
+                })
+                .flatMap(a -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(a))
+                .onErrorResume(AcquisitionException::errorHandler);
+    }
+
+    public Mono<ServerResponse> createCredit(ServerRequest request){
+        Mono<CreditDto> dto = request.bodyToMono(CreditDto.class);
+        Credit credit = new Credit();
+        Acquisition acquisition = new Acquisition();
+        return dto
+                .flatMap(d -> iCustomerService.findByDocumentNumber(d.getDocumentNumber())
+                        .map(c -> {
+                            credit.setCustomer(c);
+                            credit.setPayment(0);
+                            credit.setAmount(d.getAmount());
+                            return d;
+                        })
+                )
+                .map(d -> {
+                    acquisition.setProductType(d.getProductType());
+                    acquisition.setCustomerType(d.getCustomerType());
+                    acquisition.setCustomerDocumentNumber(d.getDocumentNumber());
+                    acquisition.setStatus("CREATED");
+                    return acquisition;
+                })
+                .flatMap(a -> {
+                    return iCreditService.findByCustomerDocumentNumber(credit.getCustomer().getDocumentNumber())
+                            .filter(f -> f.getStatus().equals("CREATED"))
+                            .filter(f -> f.getAcquisition().getProductType().equals(a.getProductType()))
+                            .count()
+                            .flatMap(c -> {
+                                CreditRule creditRule = new CreditRule(a.getCustomerType());
+                                if (creditRule.getCreditAmount() <= Math.toIntExact(c)) {
+                                    return Mono.error(
+                                            new WebClientResponseException(400,
+                                                    messageException.creditAmountMessage(a.getCustomerType()),
+                                                    null,null,null)
+                                    );
+                                }
+                                return service.create(a)
+                                        .flatMap(aq -> {
+                                            credit.setStatus("CREATED");
+                                            credit.setAcquisition(a);
+                                            return iCreditService.save(credit);
                                         });
                             });
                 })
