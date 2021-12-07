@@ -9,6 +9,7 @@ import com.nttdata.acquisition.util.Validator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,19 +21,21 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class AcquisitionController {
 
+    @Autowired
     private final IAcquisitionService iAcquisitionService;
-    private final ICustomerService iCustomerService;
 
-    private static final Logger Log = LoggerFactory.getLogger(AcquisitionController.class);
+    //private final ICustomerService iCustomerService;
 
-    @GetMapping("/{id}")
+    //private static final Logger Log = LoggerFactory.getLogger(AcquisitionController.class);
+
+    /*@GetMapping("/{id}")
     public Mono<Long> findbyIdCustomer(@PathVariable String id){
         return iAcquisitionService.findAcquisitionByCustomer_Id(id)
                 .filter(f -> f.getStatus().equals("CREATED"))
                 .count();
-    }
+    }*/
 
-    @PostMapping
+    /*@PostMapping
     public Mono<Acquisition> create(@RequestBody Acquisition acquisition){
         AccountRule accountRule = new AccountRule();
         Validator validator = new Validator();
@@ -68,7 +71,7 @@ public class AcquisitionController {
                 return Mono.error(new RuntimeException(String.format("The client has an open account.")));
             }
         });
-    }
+    }*/
 
     @PutMapping
     public Mono<Acquisition> update(Acquisition acquisition){

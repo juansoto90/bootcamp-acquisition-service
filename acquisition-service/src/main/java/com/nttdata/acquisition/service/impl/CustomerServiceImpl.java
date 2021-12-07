@@ -26,4 +26,11 @@ public class CustomerServiceImpl implements ICustomerService {
         return webClientBuilder.build().get().uri(URI + "/{id}", id)
                 .retrieve().bodyToMono(Customer.class);
     }
+
+    @Override
+    public Mono<Customer> findByDocumentNumber(String documentNumber) {
+        return webClientBuilder.build().get().uri(URI + "/document-number/{documentNumber}", documentNumber)
+                .retrieve().bodyToMono(Customer.class);
+    }
+
 }

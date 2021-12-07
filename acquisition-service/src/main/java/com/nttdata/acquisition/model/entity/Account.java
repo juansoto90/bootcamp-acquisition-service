@@ -18,9 +18,14 @@ public class Account {
     private boolean maintenanceCommission;
     private boolean maximumMovementLimit;
     private Integer movementAmount;
-    private List<String> customerOwner;
-    private List<String> customerAuthorizedSigner;
+    private Customer customer;
+    private List<Customer> customerOwner;
+    private List<Customer> customerAuthorizedSigner;
     private String status;
 
     private Acquisition acquisition;
+
+    public Account(List<Customer> customerOwner){
+        this.customerOwner = customerOwner;
+    }
 }

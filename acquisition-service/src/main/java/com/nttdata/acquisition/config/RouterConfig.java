@@ -13,7 +13,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> routes(AcquisitionHandler handler){
-        return route(GET("/acquisition/{idCustomer}"), handler::findCustomerById)
-                .andRoute(POST("/acquisition"), handler::create);
+        return route(POST("/acquisition/account"), handler::createAccount)
+                .andRoute(POST("/acquisition/creditcard"), handler::createCreditCard);
     }
 }

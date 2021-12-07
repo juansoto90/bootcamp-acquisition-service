@@ -5,8 +5,7 @@ import com.nttdata.acquisition.model.entity.Customer;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
+
 public interface IAcquisitionRepository extends ReactiveMongoRepository<Acquisition, String> {
-    public Flux<Acquisition> findAcquisitionByCustomer_Id(String id);
-    Flux<Acquisition> findByCustomerDocumentNumber(String documentNumber);
-    public Flux<Acquisition> findByCustomer(Customer customer);
 }

@@ -12,11 +12,12 @@ import lombok.NoArgsConstructor;
 public class CreditCard {
     private String id;
     private String cardNumber;
-    private double availableBalance;
-    private double creditLimit;
+    private double consumption;
+    private double creditLine;
     private int expirationMonth;
     private int expirationYear;
-    private int cvv;
+    private String cvv;
+    private Customer customer;
     private String status;
 
     private Acquisition acquisition;

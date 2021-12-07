@@ -18,21 +18,6 @@ public class AcquisitionServiceImpl implements IAcquisitionService {
     private final IAcquisitionRepository iAcquisitionRepository;
 
     @Override
-    public Flux<Acquisition> findAcquisitionByCustomer_Id(String id) {
-        return iAcquisitionRepository.findAcquisitionByCustomer_Id(id);
-    }
-
-    @Override
-    public Flux<Acquisition> findByCustomerDocumentNumber(String documentNumber) {
-        return iAcquisitionRepository.findByCustomerDocumentNumber(documentNumber);
-    }
-
-    @Override
-    public Flux<Acquisition> findByIdCustomer(Customer customer) {
-        return iAcquisitionRepository.findByCustomer(customer);
-    }
-
-    @Override
     public Mono<Acquisition> create(Acquisition acquisition) {
         return iAcquisitionRepository.save(acquisition);
     }

@@ -1,15 +1,15 @@
 package com.nttdata.acquisition.service.impl;
 
 import com.nttdata.acquisition.model.entity.Account;
+import com.nttdata.acquisition.model.entity.Customer;
 import com.nttdata.acquisition.service.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Collections;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -39,5 +39,30 @@ public class AccountServiceImpl implements IAccountService {
                 .bodyValue(account)
                 .retrieve()
                 .bodyToMono(Account.class);
+    }
+
+    @Override
+    public Flux<Account> findAllByCustomerOwner(Account account) {
+        return webClientBuilder
+                .baseUrl(BASE)
+                .build()
+                .post()
+                .uri("/customerowner")
+                .accept(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(account)
+                .retrieve()
+                .bodyToFlux(Account.class);
+    }
+
+    @Override
+    public Flux<Account> findByCustomerDocumentNumber(String documentNumber) {
+        return webClientBuilder
+                .baseUrl(BASE)
+                .build()
+                .get()
+                .uri("/customer/{documentNumber}", documentNumber)
+                .retrieve()
+                .bodyToFlux(Account.class);
     }
 }

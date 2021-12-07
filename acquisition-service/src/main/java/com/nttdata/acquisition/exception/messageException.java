@@ -33,4 +33,12 @@ public class messageException {
         else
             return "";
     }
+
+    public static String holderQuantityMessage(){
+        return "Account must have at least one owner";
+    }
+
+    public static String creditCardAmountMessage(){
+        return "You already have a credit card";
+    }
 }
